@@ -32,12 +32,23 @@ class MainActivity : AppCompatActivity() {
         teamTime.add(TeamTime("中"))
 
         val teamDate = mutableListOf<TeamDate>()
-        teamDate.add(TeamDate("6月15日", teamTime))
-        teamDate.add(TeamDate("6月16日", teamTime))
+        teamDate.add(TeamDate("6月15日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月16日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月17日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月18日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月19日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月20日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月21日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月22日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月23日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月24日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
+        teamDate.add(TeamDate("6月25日", teamTime, "21012FCW12-F406PS-0.55*996*130=214",">4.8"))
 
         val teamDateColumn = Column<String>("日期", "teamDate")                          //普通行用Column
         val teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           //普通行的子行用ArrayColumn
-        val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn)
+        val proMessageColumn = Column<String>("产品信息", "proMessage")
+        val proWeightColumn = Column<String>("克重", "proWeight")
+        val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proMessageColumn, proWeightColumn)
 
         binding.proTable.setTableData(tableData)
         binding.proTable.config.isShowTableTitle = true
