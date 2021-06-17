@@ -4,7 +4,7 @@ import com.bin.david.form.annotation.ColumnType
 import com.bin.david.form.annotation.SmartColumn
 
 /**
- * Created by xiao on 2021.6.15
+ * Created by xiao on 2021/6/15
  */
 data class TeamDate(
     @SmartColumn(id = 1, name = "日期")
