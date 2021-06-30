@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ProductSchedule</string>
+    <string name="table_setting">设置表格</string>
+    <string name="exportExcel">导出Excel</string>
+    <string name="start_time">开始时间</string>
+    <string name="end_time">结束时间</string>
 </resources>

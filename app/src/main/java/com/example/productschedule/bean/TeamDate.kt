@@ -13,10 +13,4 @@ data class TeamDate(
     @SmartColumn(type = ColumnType.ArrayChild)
     private val teamTimes: List<TeamTime>,
 
-    @SmartColumn(id = 3, name = "产品信息")
-    private val proMessage: String,
-
-    @SmartColumn(id = 4, name = "克重")
-    private val proWeight: String
-
     )

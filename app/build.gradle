@@ -54,4 +54,7 @@ dependencies {
     //SmartTable
     implementation 'com.github.huangyanbin:SmartTable:2.2.0'
 
+    //Calender
+    implementation 'com.github.florent37:singledateandtimepicker:2.2.7'
+
 }

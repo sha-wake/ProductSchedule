@@ -7,6 +7,37 @@
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".MainActivity">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <Button
+            android:id="@+id/startTime"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="5dp"
+            android:clickable="true"
+            android:text="@string/start_time"
+            android:textColor="#fff" />
+        <Button
+            android:id="@+id/endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="5dp"
+            android:clickable="true"
+            android:text="@string/end_time"
+            android:textColor="#fff" />
+
+        <Button
+            android:id="@+id/proLine"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="5dp"
+            android:clickable="true"
+            android:text="选择产线"
+            android:textColor="#fff" />
+    </LinearLayout>
 
     <com.bin.david.form.core.SmartTable
         android:id="@+id/proTable"
@@ -15,15 +46,30 @@
         android:layout_weight="1"
         />
 
-    <Button
-        android:id="@+id/btnSetting"
-        android:layout_width="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="设置表格"
-        android:clickable="true"
-        android:textColor="#fff"
-        android:layout_height="45dp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <Button
+            android:id="@+id/btnSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:clickable="true"
+            android:text="@string/table_setting"
+            android:textColor="#fff" />
+
+        <Button
+            android:id="@+id/exportExcel"
+            android:layout_width="wrap_content"
+            android:text="@string/exportExcel"
+            android:clickable="true"
+            android:layout_marginStart="20dp"
+            android:textColor="#fff"
+            android:layout_height="45dp"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+
+
 </LinearLayout>
