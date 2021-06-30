@@ -35,7 +35,7 @@
             android:layout_height="45dp"
             android:layout_marginStart="5dp"
             android:clickable="true"
-            android:text="选择产线"
+            android:text="产品类型"
             android:textColor="#fff" />
     </LinearLayout>
 
@@ -53,7 +53,7 @@
         android:layout_height="50dp">
 
         <Button
-            android:id="@+id/btnSetting"
+            android:id="@+id/tableSetting"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:clickable="true"

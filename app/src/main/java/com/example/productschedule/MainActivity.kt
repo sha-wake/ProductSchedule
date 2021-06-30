@@ -5,9 +5,9 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
+import com.bin.david.form.core.SmartTable
 import com.bin.david.form.data.column.ArrayColumn
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
@@ -24,6 +24,12 @@ class MainActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        onClick()
+
+        tableCreated()
+    }
+
+    private fun onClick(){
         binding.startTime.setOnClickListener {
             showDialog()
         }
@@ -33,7 +39,9 @@ class MainActivity : AppCompatActivity(){
         binding.proLine.setOnClickListener{
             getSelectDialog();
         }
-        tableCreated()
+        binding.tableSetting.setOnClickListener{
+            getTableSettingDialog()
+        }
     }
 
     /**
@@ -82,6 +90,7 @@ class MainActivity : AppCompatActivity(){
      * 根据获取的起止时间来显示多少列
      * @param sDate 开始时间
      * @param eDate 结束时间
+     * 待整合中
      */
     /*
     获取接下来一周的时间，上一周同理
@@ -104,7 +113,7 @@ class MainActivity : AppCompatActivity(){
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-                Log.i("date2", format.format(calendar.time))
+//                Log.i("date2", format.format(calendar.time))
             }, calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH]
         )
         datePickerDialog.show()
@@ -120,29 +129,70 @@ class MainActivity : AppCompatActivity(){
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-                Log.i("date2", format.format(calendar.time))
+//                Log.i("date2", format.format(calendar.time))
             }, calendar[Calendar.YEAR], calendar[Calendar.MONTH], calendar[Calendar.DAY_OF_MONTH]
         )
         datePickerDialog.show()
     }
 
     private fun getSelectDialog() {
-        var proType: String = "全部";
-        val array2 = arrayOf("全部", "EVA", "白膜")
+        var proType = "全部";
+        val arrayType = arrayOf("全部", "白膜", "透明EVA","交联型POE","热塑型POE","共挤胶膜","有色胶膜")
         val builder = AlertDialog.Builder(this)
         builder.setIcon(R.drawable.ic_search)
-        builder.setTitle("选择产品类型")
-        builder.setSingleChoiceItems(array2, 1) { dialog, which ->
-            proType = array2[which]
-            Log.e("TAG", "select ${array2[which]}")
+        builder.setTitle("  选择产品类型")
+        builder.setSingleChoiceItems(arrayType, 1) { dialog, which ->
+            proType = arrayType[which]
+//            Log.e("TAG", "select ${array2[which]}")
         }
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
-                    Log.e("TAG", "click yes,$proType")
+//                    Log.e("TAG", "click yes,$proType")
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
-                    Log.e("TAG", "click no，$proType")
+//                    Log.e("TAG", "click no，$proType")
+                }
+            }
+        }
+        builder.setPositiveButton("确定", dialogClickListener)
+        builder.setNegativeButton("取消", dialogClickListener)
+        builder.create().show();
+    }
+
+    /**
+     * 飞滚功能，安卓界面的滚动适配
+     * 提供表格四个放置方位： 左、右、顶和底
+     *
+     */
+    private fun getTableSettingDialog() {
+        val arrayFly = arrayOf("置左", "置右", "置顶","置底")
+        val builder = AlertDialog.Builder(this)
+        builder.setIcon(R.drawable.ic_table)
+        builder.setTitle("  飞滚")
+        builder.setSingleChoiceItems(arrayFly, 1) { dialog, which ->
+            when (which){
+               0 -> {
+                   binding.proTable.matrixHelper.flingLeft(200)
+               }
+               1 -> {
+                   binding.proTable.matrixHelper.flingTop(200)
+               }
+               2 -> {
+                   binding.proTable.matrixHelper.flingRight(200)
+               }
+               3 -> {
+                   binding.proTable.matrixHelper.flingBottom(200)
+               }
+            }
+        }
+        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    binding.proTable.invalidate()
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+//                    Log.e("TAG", "click no，$proType")
                 }
             }
         }
