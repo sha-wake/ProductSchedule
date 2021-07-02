@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bin.david.form.data.column.ArrayColumn
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
+import com.emreesen.sntoast.SnToast
 import com.example.productschedule.bean.TeamDate
 import com.example.productschedule.bean.TeamTime
 import com.example.productschedule.databinding.ActivityMainBinding
@@ -28,14 +29,13 @@ class MainActivity : AppCompatActivity(){
     private lateinit var teamTime: MutableList<TeamTime>
     private lateinit var teamDate: MutableList<TeamDate>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         onClick()
-        tableCreated()
+        tableCreated()                                                                                // 初始化显示当天以及接下来几天的数据
     }
 
     private fun onClick(){
@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity(){
         }
         binding.tableSetting.setOnClickListener{
             getTableSettingDialog()
+        }
+        binding.exportExcel.setOnClickListener{
+
         }
 
     }
@@ -90,14 +93,17 @@ class MainActivity : AppCompatActivity(){
 //        teamDate.add(TeamDate("6月29日", teamTime))
 //        teamDate.add(TeamDate("6月30日", teamTime))
 
-        val teamDateColumn = Column<String>("日期", "teamDate")                          //普通行用Column
-        val teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           //普通行的子行用ArrayColumn
+        val teamDateColumn = Column<String>("日期", "teamDate")                          // 普通行用Column
+        val teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           // 普通行的子行用ArrayColumn
         val proMessageColumn = Column<String>("产品信息", "proMessage")
         val proSpeedColumn = Column<Int>("产线速度", "proSpeed")
         val proWeightColumn = Column<String>("克重", "proWeight")
         val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proMessageColumn, proSpeedColumn, proWeightColumn)
 
         binding.proTable.setTableData(tableData)
+        teamDateColumn.isFixed = true                                                                           // 固定某列，考虑是否增加取消
+        teamTimeColumn.isFixed = true
+        
         tableConfig()
     }
 
@@ -105,19 +111,18 @@ class MainActivity : AppCompatActivity(){
     // 不同设置自行添加，不放这
     private fun tableConfig() {
         binding.proTable.config.isShowTableTitle = true
-        binding.proTable.config.isShowXSequence = false                                                          //去除标题行上面的ABCD
+        binding.proTable.config.isShowXSequence = true                                                          // 去除标题行上面的序号
         binding.proTable.config.isShowYSequence = true
-        binding.proTable.config.minTableWidth = 800                                                              //设定最小间距、列数少适应屏幕
-        binding.proTable.setZoom(true, 2F, 0.65F)                                     //设定缩放比例大小
+        binding.proTable.config.minTableWidth = 800                                                             // 设定最小间距、列数少适应屏幕
+        binding.proTable.setZoom(true, 2F, 0.65F)                                   // 设定缩放比例大小
         binding.proTable.config.isShowTableTitle = false
     }
 
-    /**
-     * 选择时间和产品类型之后，改变表格结构，重新生成
-     */
+
+    // 选择时间和产品类型之后，改变表格结构，重新生成
     @SuppressLint("SimpleDateFormat")
     private fun tableChanged() {
-        format = SimpleDateFormat("MM月dd日")
+        format = SimpleDateFormat("MM月dd日")                                                           // 生成固定格式
 //        val c = Calendar.getInstance()
 //        c.time = Date()
 //        c.add(Calendar.DATE, +a)
@@ -127,12 +132,15 @@ class MainActivity : AppCompatActivity(){
 //        val et = sdf.parse(eTime)
 //        val calBegin = Calendar.getInstance()
         dateList = mutableListOf<String>()
-        dateList .add(format.format(calBegin.time))
+        dateList.add(format.format(calBegin.time))
+
+        // 循环遍历，把选定的两个时间段的时间放到列表里
         while (calEnd.time.after(calBegin.time)){
             calBegin.add(Calendar.DAY_OF_MONTH, 1)
             dateList.add(format.format(calBegin.time))
         }
-        dateList.removeAt(dateList.size - 1)
+
+//        dateList.removeAt(dateList.size - 1)
 //        dateList.forEach {
 //            Log.i("list", it)
 //        }
@@ -165,9 +173,10 @@ class MainActivity : AppCompatActivity(){
 //        val format = SimpleDateFormat("MM月dd日")
         format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val calendar = Calendar.getInstance(Locale.CHINA)
+
+        //这里的year,monthOfYear,dayOfMonth的值与DatePickerDialog控件设置的最新值一致
         val datePickerDialog = DatePickerDialog(this@MainActivity,
-            { _: DatePicker, year, month, dayOfMonth -> //修改日历控件的年，月，日
-                //这里的year,monthOfYear,dayOfMonth的值与DatePickerDialog控件设置的最新值一致
+            { _: DatePicker, year, month, dayOfMonth ->                                                     // 修改日历控件的年，月，日
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
@@ -182,13 +191,12 @@ class MainActivity : AppCompatActivity(){
 
     @SuppressLint("SimpleDateFormat")
     private fun showDialogTwo(){
-//        val format = DateFormat.getDateTimeInstance("MM月dd日") //获取日期格式器对象
+//        val format = DateFormat.getDateTimeInstance("MM月dd日")                                           // 获取日期格式器对象
 //        val format = SimpleDateFormat("MM月dd日")
         format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val calendar = Calendar.getInstance(Locale.CHINA)
         val datePickerDialog = DatePickerDialog(this@MainActivity,
-            { _: DatePicker, year, month, dayOfMonth -> //修改日历控件的年，月，日
-                //这里的year,monthOfYear,dayOfMonth的值与DatePickerDialog控件设置的最新值一致
+            { _: DatePicker, year, month, dayOfMonth ->
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
@@ -204,20 +212,19 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-    /**
-     * 选择不同类型产品，表格会生成不同的产线安排计划
-     */
+    // 选择不同类型产品，表格会生成不同的产线安排计划
     private fun getSelectDialog() {
-        var proType = "全部"
+        var proType: String
         val arrayType = arrayOf("全部", "白膜", "透明EVA","交联型POE","热塑型POE","共挤胶膜","有色胶膜")
         val builder = AlertDialog.Builder(this)
         builder.setIcon(R.drawable.ic_search)
         builder.setTitle("  选择产品类型")
         builder.setSingleChoiceItems(arrayType, 1) { _, which ->
             proType = arrayType[which]
-            //do something
+            binding.proType.text = proType                                                                     // 按钮会显示选择的产品类型
 //            Log.e("TAG", "select ${array2[which]}")
         }
+
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
@@ -228,16 +235,15 @@ class MainActivity : AppCompatActivity(){
                 }
             }
         }
+
         builder.setPositiveButton("确定", dialogClickListener)
         builder.setNegativeButton("取消", dialogClickListener)
         builder.create().show()
     }
 
     /**
-     *
      * 飞滚功能，安卓界面的滚动适配
      * 提供表格四个放置方位： 左、右、顶和底
-     *
      */
     private fun getTableSettingDialog() {
         val arrayFly = arrayOf("置左", "置右", "置顶","置底")
@@ -260,16 +266,29 @@ class MainActivity : AppCompatActivity(){
                }
             }
         }
+
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     binding.proTable.invalidate()
+                    SnToast.Custom()
+                        .context(this@MainActivity)
+                        .backgroundColor(R.color.purple_500)
+                        .textColor(R.color.white)
+                        .icon(R.drawable.ic_info)
+                        .message("设置成功")
+                        .duration(1000)
+                        .iconSize(24)
+                        .textSize(12)
+                        .build()
+
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
 //                    Log.e("TAG", "click no，$proType")
                 }
             }
         }
+
         builder.setPositiveButton("确定", dialogClickListener)
         builder.setNegativeButton("取消", dialogClickListener)
         builder.create().show()

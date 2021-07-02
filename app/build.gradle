@@ -51,10 +51,12 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    //SmartTable
+    // SmartTable
     implementation 'com.github.huangyanbin:SmartTable:2.2.0'
 
-    //Calender
+    // Calender
     implementation 'com.github.florent37:singledateandtimepicker:2.2.7'
 
+    // Toast
+    implementation 'com.github.emreesen27:Android-Custom-Toast-Message:1.0.3'
 }
