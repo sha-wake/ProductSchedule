@@ -9,7 +9,6 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.bin.david.form.data.column.ArrayColumn
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
@@ -20,7 +19,6 @@ import com.example.productschedule.bean.TeamDate
 import com.example.productschedule.bean.TeamTime
 import com.example.productschedule.databinding.ActivityMainBinding
 import com.example.productschedule.utils.RequestUtil
-import com.example.productschedule.utils.RequestUtil.request
 import data.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -329,7 +327,7 @@ class MainActivity : AppCompatActivity(){
         var result: ProLinePlanBean?
         runBlocking {
             withContext(Dispatchers.IO){
-                result = RequestUtil.request(requireContext()) {
+                result = RequestUtil.request(getContext()) {
                     HttpClient.getHttpService().getLinePlans(fstId, funcId, loginId, startDate, endDate, productType).execute()
                 }
             }

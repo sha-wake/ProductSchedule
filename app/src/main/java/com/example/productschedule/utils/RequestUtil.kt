@@ -6,7 +6,7 @@ import com.example.productschedule.exception.NullBodyException
 import retrofit2.Response
 
 object RequestUtil {
-    suspend fun <T> request(context: Unit, request: ()-> Response<T>) : T? {
+    suspend fun <T> request(context: Context, request: ()-> Response<T>) : T? {
         var result: Response<T>? = null
         try {
             result = request()
