@@ -16,8 +16,8 @@ data class TeamDate(
     @SmartColumn(name = "产品信息")
     private val proMessage: String,
 
-    @SmartColumn(name = "产线速度")
-    private val proSpeed: Int,
+//    @SmartColumn(name = "产线速度")
+//    private val proSpeed: Int,
 
     @SmartColumn(name = "克重")
     private val proWeight: String,

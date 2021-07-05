@@ -46,30 +46,30 @@
         android:layout_weight="1"
         />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-
-        <Button
-            android:id="@+id/tableSetting"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:clickable="true"
-            android:text="@string/table_setting"
-            android:textColor="#fff" />
-
-        <Button
-            android:id="@+id/exportExcel"
-            android:layout_width="wrap_content"
-            android:text="@string/exportExcel"
-            android:clickable="true"
-            android:layout_marginStart="20dp"
-            android:textColor="#fff"
-            android:layout_height="45dp"
-            android:textAllCaps="false"/>
-    </LinearLayout>
-
 
 </LinearLayout>
+
+<!--<LinearLayout-->
+<!--android:orientation="horizontal"-->
+<!--android:gravity="center"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="50dp">-->
+
+<!--<Button-->
+<!--    android:id="@+id/tableSetting"-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="45dp"-->
+<!--    android:clickable="true"-->
+<!--    android:text="@string/table_setting"-->
+<!--    android:textColor="#fff" />-->
+
+<!--<Button-->
+<!--    android:id="@+id/exportExcel"-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:text="@string/exportExcel"-->
+<!--    android:clickable="true"-->
+<!--    android:layout_marginStart="20dp"-->
+<!--    android:textColor="#fff"-->
+<!--    android:layout_height="45dp"-->
+<!--    android:textAllCaps="false"/>-->
+<!--</LinearLayout>-->

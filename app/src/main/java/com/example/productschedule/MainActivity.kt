@@ -3,18 +3,28 @@ package com.example.productschedule
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.ContentProvider
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.bin.david.form.data.column.ArrayColumn
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
 import com.emreesen.sntoast.SnToast
+import com.example.productschedule.BaseApplication.Companion.getContext
+import com.example.productschedule.bean.ProLinePlanBean
 import com.example.productschedule.bean.TeamDate
 import com.example.productschedule.bean.TeamTime
 import com.example.productschedule.databinding.ActivityMainBinding
+import com.example.productschedule.utils.RequestUtil
+import com.example.productschedule.utils.RequestUtil.request
+import data.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,16 +33,22 @@ class MainActivity : AppCompatActivity(){
     private lateinit var format: SimpleDateFormat
 //    private lateinit var sTime: String
 //    private lateinit var eTime: String
+    private lateinit var context: Context
+    private lateinit var provider: ContentProvider
     private lateinit var calBegin: Calendar
     private lateinit var calEnd: Calendar
     private lateinit var dateList: MutableList<String>
     private lateinit var teamTime: MutableList<TeamTime>
     private lateinit var teamDate: MutableList<TeamDate>
+    private lateinit var tableData: TableData<TeamDate>
+    private lateinit var teamDateColumn: Column<String>
+    private lateinit var teamTimeColumn: ArrayColumn<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        context = getContext()
 
         onClick()
         tableCreated()                                                                                // 初始化显示当天以及接下来几天的数据
@@ -46,14 +62,16 @@ class MainActivity : AppCompatActivity(){
             showDialogTwo()
         }
         binding.proType.setOnClickListener{
-            getSelectDialog();
+            getSelectDialog()
         }
-        binding.tableSetting.setOnClickListener{
-            getTableSettingDialog()
-        }
-        binding.exportExcel.setOnClickListener{
-
-        }
+//        binding.tableSetting.setOnClickListener{
+//            getTableSettingDialog()
+//        }
+//
+//        // 测试修改表格数据，确定采用何种方法
+//        binding.exportExcel.setOnClickListener{
+//
+//        }
 
     }
 
@@ -71,38 +89,42 @@ class MainActivity : AppCompatActivity(){
 
         teamDate = mutableListOf<TeamDate>()
         for (a in 0..9){
-            val sdf = SimpleDateFormat("MM月dd日")
+            val sdf = SimpleDateFormat("M月d日")
             val c = Calendar.getInstance()
             c.time = Date()
             c.add(Calendar.DATE, +a)
             val d = c.time
             val day = sdf.format(d)
-            teamDate.add(TeamDate(day, teamTime, "21012FCW12-F406PS-0.55*996*130=214", 30,">4.5"))
+            teamDate.add(TeamDate(day, teamTime, "21012FCW12-F406PS-0.55*996*130=214", ">4.5"))
         }
 
-//        测试数据
-//        teamDate.add(TeamDate("6月20日", teamTime))
-//        teamDate.add(TeamDate("6月21日", teamTime))
-//        teamDate.add(TeamDate("6月22日", teamTime))
-//        teamDate.add(TeamDate("6月23日", teamTime))
-//        teamDate.add(TeamDate("6月24日", teamTime))
-//        teamDate.add(TeamDate("6月25日", teamTime))
-//        teamDate.add(TeamDate("6月26日", teamTime))
-//        teamDate.add(TeamDate("6月27日", teamTime))
-//        teamDate.add(TeamDate("6月28日", teamTime))
-//        teamDate.add(TeamDate("6月29日", teamTime))
-//        teamDate.add(TeamDate("6月30日", teamTime))
+        /*
+        //测试数据
+        teamDate.add(TeamDate("6月20日", teamTime))
+        teamDate.add(TeamDate("6月21日", teamTime))
+        teamDate.add(TeamDate("6月22日", teamTime))
+        teamDate.add(TeamDate("6月23日", teamTime))
+        teamDate.add(TeamDate("6月24日", teamTime))
+        teamDate.add(TeamDate("6月25日", teamTime))
+        teamDate.add(TeamDate("6月26日", teamTime))
+        teamDate.add(TeamDate("6月27日", teamTime))
+        teamDate.add(TeamDate("6月28日", teamTime))
+        teamDate.add(TeamDate("6月29日", teamTime))
+        teamDate.add(TeamDate("6月30日", teamTime))
+        */
 
-        val teamDateColumn = Column<String>("日期", "teamDate")                          // 普通行用Column
-        val teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           // 普通行的子行用ArrayColumn
+        teamDateColumn = Column<String>("日期", "teamDate")                          // 普通行用Column
+        teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           // 普通行的子行用ArrayColumn
         val proMessageColumn = Column<String>("产品信息", "proMessage")
-        val proSpeedColumn = Column<Int>("产线速度", "proSpeed")
+//        val proSpeedColumn = Column<Int>("产线速度", "proSpeed")
         val proWeightColumn = Column<String>("克重", "proWeight")
-        val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proMessageColumn, proSpeedColumn, proWeightColumn)
+        val proFirst = Column<String>("P4-2#，1040", proMessageColumn, proWeightColumn)
+//        val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proMessageColumn, proSpeedColumn, proWeightColumn)
+        tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proFirst)
 
         binding.proTable.setTableData(tableData)
-        teamDateColumn.isFixed = true                                                                           // 固定某列，考虑是否增加取消
-        teamTimeColumn.isFixed = true
+//        teamDateColumn.isFixed = true                                                                           // 固定某列，考虑是否增加取消
+//        teamTimeColumn.isFixed = true
         
         tableConfig()
     }
@@ -111,7 +133,7 @@ class MainActivity : AppCompatActivity(){
     // 不同设置自行添加，不放这
     private fun tableConfig() {
         binding.proTable.config.isShowTableTitle = true
-        binding.proTable.config.isShowXSequence = true                                                          // 去除标题行上面的序号
+        binding.proTable.config.isShowXSequence = false                                                         // 去除标题行上面的序号
         binding.proTable.config.isShowYSequence = true
         binding.proTable.config.minTableWidth = 800                                                             // 设定最小间距、列数少适应屏幕
         binding.proTable.setZoom(true, 2F, 0.65F)                                   // 设定缩放比例大小
@@ -293,5 +315,27 @@ class MainActivity : AppCompatActivity(){
         builder.setNegativeButton("取消", dialogClickListener)
         builder.create().show()
     }
+
+    /**
+     * 加载排班计划数据
+     * @param fstId
+     * @param funcId
+     * @param loginId
+     * @param startDate
+     * @param endDate
+     * @param productType
+     */
+    fun loadPlans(fstId: String, funcId: String, loginId: String, startDate: String, endDate: String, productType: String): ProLinePlanBean? {
+        var result: ProLinePlanBean?
+        runBlocking {
+            withContext(Dispatchers.IO){
+                result = RequestUtil.request(requireContext()) {
+                    HttpClient.getHttpService().getLinePlans(fstId, funcId, loginId, startDate, endDate, productType).execute()
+                }
+            }
+        }
+        return result
+    }
+
 
 }
