@@ -1,6 +1,6 @@
 package com.example.productschedule.bean
 
-data class Lines(
+data class Line(
     val devId: String,
     val devCode: String,
     val ProductType : String,

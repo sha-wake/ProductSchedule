@@ -12,7 +12,7 @@ object HttpClient {
     private val mClient: OkHttpClient by lazy { newClient() }
     private val ip: IpBean by lazy { getIpBean() }
     private val httpService: HttpService = Retrofit.Builder()
-        .baseUrl("http://${ip.address}/${ip.path}/")
+        .baseUrl("http://${ip.address}/${ip.path}/ProductLinePlan/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(mClient)
         .build()

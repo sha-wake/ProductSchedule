@@ -7,6 +7,7 @@ import android.content.ContentProvider
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
 import com.bin.david.form.data.column.ArrayColumn
@@ -14,6 +15,7 @@ import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
 import com.emreesen.sntoast.SnToast
 import com.example.productschedule.BaseApplication.Companion.getContext
+import com.example.productschedule.bean.LinePlanBackInfo
 import com.example.productschedule.bean.ProLinePlanBean
 import com.example.productschedule.bean.TeamDate
 import com.example.productschedule.bean.TeamTime
@@ -31,8 +33,6 @@ class MainActivity : AppCompatActivity(){
     private lateinit var format: SimpleDateFormat
 //    private lateinit var sTime: String
 //    private lateinit var eTime: String
-    private lateinit var context: Context
-    private lateinit var provider: ContentProvider
     private lateinit var calBegin: Calendar
     private lateinit var calEnd: Calendar
     private lateinit var dateList: MutableList<String>
@@ -40,16 +40,19 @@ class MainActivity : AppCompatActivity(){
     private lateinit var teamDate: MutableList<TeamDate>
     private lateinit var tableData: TableData<TeamDate>
     private lateinit var teamDateColumn: Column<String>
+    private lateinit var proFirst: Column<String>
     private lateinit var teamTimeColumn: ArrayColumn<String>
+    private lateinit var testPlan: List<LinePlanBackInfo>
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        context = getContext()
 
         onClick()
         tableCreated()                                                                                // 初始化显示当天以及接下来几天的数据
+
     }
 
     private fun onClick(){
@@ -60,8 +63,29 @@ class MainActivity : AppCompatActivity(){
             showDialogTwo()
         }
         binding.proType.setOnClickListener{
-            getSelectDialog()
+//            getSelectDialog()
+
+//            proFirst.columnName = "helle"                                                             // 修改列名
+
+//            teamTime = mutableListOf<TeamTime>()
+//            teamTime.add(TeamTime("白", "", ""))
+//            teamTime.add(TeamTime("早", "", ""))
+//            teamTime.add(TeamTime("中", "", ""))
+//
+//            teamDate = mutableListOf<TeamDate>()
+//            for (a in 0..1){
+//                val sdf = SimpleDateFormat("M月d日")
+//                val c = Calendar.getInstance()
+//                c.time = Date()
+//                c.add(Calendar.DATE, +a)
+//                val d = c.time
+//                val day = sdf.format(d)
+//                teamDate.add(TeamDate(day, teamTime))
+//            }
+//            binding.proTable.addData(teamDate, true)
+
         }
+
 //        binding.tableSetting.setOnClickListener{
 //            getTableSettingDialog()
 //        }
@@ -80,43 +104,29 @@ class MainActivity : AppCompatActivity(){
      */
     @SuppressLint("SimpleDateFormat")
     private fun tableCreated() {
+
         teamTime = mutableListOf<TeamTime>()
-        teamTime.add(TeamTime("白"))
-        teamTime.add(TeamTime("早"))
-        teamTime.add(TeamTime("中"))
+//        teamTime.add(TeamTime("白", "", ""))
+//        teamTime.add(TeamTime("早", "", ""))
+//        teamTime.add(TeamTime("中", "", ""))
 
         teamDate = mutableListOf<TeamDate>()
-        for (a in 0..9){
-            val sdf = SimpleDateFormat("M月d日")
-            val c = Calendar.getInstance()
-            c.time = Date()
-            c.add(Calendar.DATE, +a)
-            val d = c.time
-            val day = sdf.format(d)
-            teamDate.add(TeamDate(day, teamTime, "21012FCW12-F406PS-0.55*996*130=214", ">4.5"))
-        }
-
-        /*
-        //测试数据
-        teamDate.add(TeamDate("6月20日", teamTime))
-        teamDate.add(TeamDate("6月21日", teamTime))
-        teamDate.add(TeamDate("6月22日", teamTime))
-        teamDate.add(TeamDate("6月23日", teamTime))
-        teamDate.add(TeamDate("6月24日", teamTime))
-        teamDate.add(TeamDate("6月25日", teamTime))
-        teamDate.add(TeamDate("6月26日", teamTime))
-        teamDate.add(TeamDate("6月27日", teamTime))
-        teamDate.add(TeamDate("6月28日", teamTime))
-        teamDate.add(TeamDate("6月29日", teamTime))
-        teamDate.add(TeamDate("6月30日", teamTime))
-        */
+//        for (a in 0..9){
+//            val sdf = SimpleDateFormat("M月d日")
+//            val c = Calendar.getInstance()
+//            c.time = Date()
+//            c.add(Calendar.DATE, +a)
+//            val d = c.time
+//            val day = sdf.format(d)
+//            teamDate.add(TeamDate(day, teamTime))
+//        }
 
         teamDateColumn = Column<String>("日期", "teamDate")                          // 普通行用Column
         teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           // 普通行的子行用ArrayColumn
-        val proMessageColumn = Column<String>("产品信息", "proMessage")
-//        val proSpeedColumn = Column<Int>("产线速度", "proSpeed")
-        val proWeightColumn = Column<String>("克重", "proWeight")
-        val proFirst = Column<String>("P4-2#，1040", proMessageColumn, proWeightColumn)
+        val proMessageColumn = ArrayColumn<String>("产品信息", "teamTimes.proMessage")
+//        val proSpeedColumn = ArrayColumn<Int>("产线速度", "proSpeed")
+        val proWeightColumn = ArrayColumn<String>("克重", "teamTimes.proWeight")
+        proFirst = Column<String>("P4-2#，1040", proMessageColumn, proWeightColumn)
 //        val tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proMessageColumn, proSpeedColumn, proWeightColumn)
         tableData = TableData("产线表", teamDate, teamDateColumn, teamTimeColumn, proFirst)
 
@@ -127,6 +137,21 @@ class MainActivity : AppCompatActivity(){
         tableConfig()
     }
 
+    /**
+     * 测试数据，增加某天的排产计划成功
+     */
+    /*
+    testPlan = listOf(LinePlanBackInfo("21012FCW12-F406PS-0.55*996*130=214", ">4.5", "#66FFCC","2","2021/7/6 8:00:00"),
+    LinePlanBackInfo("21012FCW12-F406PS-0.55*996*130=214", ">4.5", "#66FFCC","1","2021/7/6 16:00:00"),
+    LinePlanBackInfo("21012FCW12-F406PS-0.55*996*130=214", ">4.5", "#66FFCC","3","2021/7/6 16:00:00"))
+
+    lineSort(testPlan)
+    testPlan.forEach {
+            println(it.TeamTime)
+        Log.i("testPlan", it.TeamTime)
+    }
+    */
+
     // 表格部分设置，共同部分可调用此项
     // 不同设置自行添加，不放这
     private fun tableConfig() {
@@ -136,6 +161,7 @@ class MainActivity : AppCompatActivity(){
         binding.proTable.config.minTableWidth = 800                                                             // 设定最小间距、列数少适应屏幕
         binding.proTable.setZoom(true, 2F, 0.65F)                                   // 设定缩放比例大小
         binding.proTable.config.isShowTableTitle = false
+//        binding.proTable.tableData.isShowCount = true                                                         // 显示统计行
     }
 
 
@@ -174,7 +200,6 @@ class MainActivity : AppCompatActivity(){
      * @param eDate 结束时间
      * 待整合中
      */
-
     /*
     获取接下来一周的时间，上一周同理
     for (a in 1..7){
@@ -187,7 +212,7 @@ class MainActivity : AppCompatActivity(){
     Log.d("DATE", day)
     */
 
-    // 把获得的两个时间作计较，按天显示一行数据，怎么说？
+    // 把获得的两个时间作计较，按天显示一行数据
     @SuppressLint("InflateParams", "ResourceType", "SimpleDateFormat")
     private fun showDialog(){
 //        val format = SimpleDateFormat("MM月dd日")
@@ -323,17 +348,44 @@ class MainActivity : AppCompatActivity(){
      * @param endDate
      * @param productType
      */
-    fun loadPlans(fstId: String, funcId: String, loginId: String, startDate: String, endDate: String, productType: String): ProLinePlanBean? {
+    fun loadPlans(fstId: String, funcId: String, loginId: String, startDate: String, endDate: String, productType: String): List<LinePlanBackInfo>{
         var result: ProLinePlanBean?
         runBlocking {
             withContext(Dispatchers.IO){
+                // 获取背景 RequestUtil Unit -> Context
                 result = RequestUtil.request(getContext()) {
-                    HttpClient.getHttpService().getLinePlans(fstId, funcId, loginId, startDate, endDate, productType).execute()
+                    HttpClient.getHttpService().getProductLinePlanList(fstId, funcId, loginId, startDate, endDate, productType).execute()
                 }
             }
         }
-        return result
+        return convertPlans(result)
     }
 
+    /**
+     * 返回处理过的，得到想要的数据
+     */
+    private fun convertPlans(line: ProLinePlanBean?): List<LinePlanBackInfo>{
+        val list = mutableListOf<LinePlanBackInfo>()
+        if (line == null)
+            return list
+        val liList= line.data
+        for (index in liList.linePlans.indices) {
+            list.add(LinePlanBackInfo(liList.linePlans[index].taskName, liList.linePlans[index].GwString,
+                liList.linePlans[index].itemColor, liList.linePlans[index].TeamTime, liList.linePlans[index].TeamDate))
+        }
 
+        return list
+    }
+
+    /**
+     * 根据 TeamTime 升序排序
+     * @param list
+     */
+    private fun lineSort(list: List<LinePlanBackInfo>): List<LinePlanBackInfo> {
+        Collections.sort(list, kotlin.Comparator { o1, o2 ->
+            return@Comparator o1.TeamTime.compareTo(o2.TeamTime)
+        })
+        return list
+    }
 }
+
