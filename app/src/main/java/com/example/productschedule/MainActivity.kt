@@ -3,18 +3,17 @@ package com.example.productschedule
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.ContentProvider
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.bin.david.form.data.column.ArrayColumn
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.table.TableData
 import com.emreesen.sntoast.SnToast
-import com.example.productschedule.BaseApplication.Companion.getContext
 import com.example.productschedule.bean.LinePlanBackInfo
 import com.example.productschedule.bean.ProLinePlanBean
 import com.example.productschedule.bean.TeamDate
@@ -33,6 +32,7 @@ class MainActivity : AppCompatActivity(){
     private lateinit var format: SimpleDateFormat
 //    private lateinit var sTime: String
 //    private lateinit var eTime: String
+    private lateinit var context: Context
     private lateinit var calBegin: Calendar
     private lateinit var calEnd: Calendar
     private lateinit var dateList: MutableList<String>
@@ -43,18 +43,32 @@ class MainActivity : AppCompatActivity(){
     private lateinit var proFirst: Column<String>
     private lateinit var teamTimeColumn: ArrayColumn<String>
     private lateinit var testPlan: List<LinePlanBackInfo>
+    private val fstId = "9"
+    private val funcId = "1"
+    private val loginId = "727"
+    private var proType = "15"
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        context = applicationContext
         onClick()
         tableCreated()                                                                                // 初始化显示当天以及接下来几天的数据
 
+//        try{
+//            val sdf: DateFormat = SimpleDateFormat("MM月dd日")
+//            val str = "2021-07-06"
+//            val df = sdf.parse(str)
+//            Log.i("day", df!!.toString())
+//
+//        } catch (e: Exception){
+//            Log.e("error", e.message.toString())
+//        }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun onClick(){
         binding.startTime.setOnClickListener {
             showDialog()
@@ -71,6 +85,15 @@ class MainActivity : AppCompatActivity(){
 //            teamTime.add(TeamTime("白", "", ""))
 //            teamTime.add(TeamTime("早", "", ""))
 //            teamTime.add(TeamTime("中", "", ""))
+
+//            for (i in 0..2) {
+//                val time = when(testPlan[i].TeamTime) {
+//                    "1" -> "早"
+//                    "2" -> "中"
+//                    else -> "晚"
+//                }
+//                teamTime.add(TeamTime(time, testPlan[i].taskName, testPlan[i].GwString))
+//            }
 //
 //            teamDate = mutableListOf<TeamDate>()
 //            for (a in 0..1){
@@ -82,15 +105,33 @@ class MainActivity : AppCompatActivity(){
 //                val day = sdf.format(d)
 //                teamDate.add(TeamDate(day, teamTime))
 //            }
-//            binding.proTable.addData(teamDate, true)
+//            try{
+//                val sdf: DateFormat = SimpleDateFormat("M月d日")
+//                val str = "2021-07-06"
+//                val df = sdf.parse(str)
+//                Log.i("day", df!!.toString())
+//
+//            } catch (e: Exception){
+//                Log.e("error", e.message.toString())
+//            }
 
+//            val day = sdf.format(df!!)
+//            Log.i("day", df!!.toString())
+//            teamDate.add(TeamDate(testPlan[0].TeamDate, teamTime))
+//            binding.proTable.addData(teamDate, true)
+//            loadPlans("9", "1", "727", "2021/7/2", "2021/7/3", "15")
+            loadPlans(fstId, funcId, loginId, "2021/07/02", "2021/07/02", proType).forEach {
+                Log.i("teamTime", it.TeamTime)
+            }
+
+//            convertDate("2021/7/2 16:00:00")
         }
 
 //        binding.tableSetting.setOnClickListener{
 //            getTableSettingDialog()
 //        }
 //
-//        // 测试修改表格数据，确定采用何种方法
+
 //        binding.exportExcel.setOnClickListener{
 //
 //        }
@@ -111,15 +152,15 @@ class MainActivity : AppCompatActivity(){
 //        teamTime.add(TeamTime("中", "", ""))
 
         teamDate = mutableListOf<TeamDate>()
-//        for (a in 0..9){
-//            val sdf = SimpleDateFormat("M月d日")
-//            val c = Calendar.getInstance()
-//            c.time = Date()
-//            c.add(Calendar.DATE, +a)
-//            val d = c.time
-//            val day = sdf.format(d)
-//            teamDate.add(TeamDate(day, teamTime))
-//        }
+        /*for (a in 0..9){
+            val sdf = SimpleDateFormat("M月d日")
+            val c = Calendar.getInstance()
+            c.time = Date()
+            c.add(Calendar.DATE, +a)
+            val d = c.time
+            val day = sdf.format(d)
+            teamDate.add(TeamDate(day, teamTime))
+        }*/
 
         teamDateColumn = Column<String>("日期", "teamDate")                          // 普通行用Column
         teamTimeColumn = ArrayColumn<String>("班次", "teamTimes.teamTime")           // 普通行的子行用ArrayColumn
@@ -168,7 +209,7 @@ class MainActivity : AppCompatActivity(){
     // 选择时间和产品类型之后，改变表格结构，重新生成
     @SuppressLint("SimpleDateFormat")
     private fun tableChanged() {
-        format = SimpleDateFormat("MM月dd日")                                                           // 生成固定格式
+//        format = SimpleDateFormat("MM月dd日")                                                           // 生成固定格式
 //        val c = Calendar.getInstance()
 //        c.time = Date()
 //        c.add(Calendar.DATE, +a)
@@ -177,6 +218,8 @@ class MainActivity : AppCompatActivity(){
 //        val st = sdf.parse(sTime)
 //        val et = sdf.parse(eTime)
 //        val calBegin = Calendar.getInstance()
+
+        format = SimpleDateFormat("yyyy/MM/dd")
         dateList = mutableListOf<String>()
         dateList.add(format.format(calBegin.time))
 
@@ -186,18 +229,15 @@ class MainActivity : AppCompatActivity(){
             dateList.add(format.format(calBegin.time))
         }
 
-//        dateList.removeAt(dateList.size - 1)
+        dateList.removeAt(dateList.size - 1)
 //        dateList.forEach {
 //            Log.i("list", it)
 //        }
 
     }
 
-
     /**
      * 根据获取的起止时间来显示多少列
-     * @param sDate 开始时间
-     * @param eDate 结束时间
      * 待整合中
      */
     /*
@@ -216,7 +256,7 @@ class MainActivity : AppCompatActivity(){
     @SuppressLint("InflateParams", "ResourceType", "SimpleDateFormat")
     private fun showDialog(){
 //        val format = SimpleDateFormat("MM月dd日")
-        format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        format = SimpleDateFormat("yyyy-MM-dd")
         val calendar = Calendar.getInstance(Locale.CHINA)
 
         //这里的year,monthOfYear,dayOfMonth的值与DatePickerDialog控件设置的最新值一致
@@ -238,7 +278,7 @@ class MainActivity : AppCompatActivity(){
     private fun showDialogTwo(){
 //        val format = DateFormat.getDateTimeInstance("MM月dd日")                                           // 获取日期格式器对象
 //        val format = SimpleDateFormat("MM月dd日")
-        format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        format = SimpleDateFormat("yyyy/MM/dd")
         val calendar = Calendar.getInstance(Locale.CHINA)
         val datePickerDialog = DatePickerDialog(this@MainActivity,
             { _: DatePicker, year, month, dayOfMonth ->
@@ -348,12 +388,11 @@ class MainActivity : AppCompatActivity(){
      * @param endDate
      * @param productType
      */
-    fun loadPlans(fstId: String, funcId: String, loginId: String, startDate: String, endDate: String, productType: String): List<LinePlanBackInfo>{
+    private fun loadPlans(fstId: String, funcId: String, loginId: String, startDate: String, endDate: String, productType: String): List<LinePlanBackInfo>{
         var result: ProLinePlanBean?
         runBlocking {
             withContext(Dispatchers.IO){
-                // 获取背景 RequestUtil Unit -> Context
-                result = RequestUtil.request(getContext()) {
+                result = RequestUtil.request(context) {
                     HttpClient.getHttpService().getProductLinePlanList(fstId, funcId, loginId, startDate, endDate, productType).execute()
                 }
             }
@@ -374,7 +413,8 @@ class MainActivity : AppCompatActivity(){
                 liList.linePlans[index].itemColor, liList.linePlans[index].TeamTime, liList.linePlans[index].TeamDate))
         }
 
-        return list
+        return lineSort(list)
+
     }
 
     /**
@@ -387,5 +427,22 @@ class MainActivity : AppCompatActivity(){
         })
         return list
     }
+
+    /**
+     * 日期格式转换 "2021/7/2 16:00:00" to "7月2日"
+     * @param string
+     */
+    private fun convertDate(string: String): String {
+        if (string.isEmpty()){
+            return string
+        }
+        val s = string.split(" ")[0]
+        val month = s.split("/")[1]
+        val day = s.split("/")[2]
+
+//        Log.i("da", date)
+        return month + "月" + day + "日"
+    }
+
 }
 

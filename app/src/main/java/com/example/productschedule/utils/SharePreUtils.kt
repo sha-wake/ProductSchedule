@@ -8,5 +8,6 @@ object SharePreUtils {
     val setinfo: SharedPreferences by lazy {
         BaseApplication.getContext()
             .getSharedPreferences("GlobalData", Context.MODE_PRIVATE)
+
     }
 }

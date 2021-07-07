@@ -66,8 +66,8 @@ interface HttpService {
 //    @GET("Menu/GetMenuList")
 //    fun getMenuList(@Query(value = "loginId") loginId: String, @Query(value = "funcId") funcId: String, @Query(value = "lang") lang: String): Call<MenuReceiveBean>
 
-    @GET("Line/GetLinePlans")
-    fun getProductLinePlanList(@Query(value = "fstId") fstId: String, @Query(value = "funId") funcId: String,
+    @GET("ProductLinePlan/GetProductLinePlanList")
+    fun getProductLinePlanList(@Query(value = "fstId") fstId: String, @Query(value = "funcId") funcId: String,
                      @Query(value = "loginId") loginId: String, @Query(value = "startDate") startDate: String,
                      @Query(value = "endDate") endDate: String, @Query(value = "productType") productType: String): Call<ProLinePlanBean>
 
